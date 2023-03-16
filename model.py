@@ -316,15 +316,9 @@ class GNN(torch.nn.Module):
         elif self.JK == "sum":
             h_list = [h.unsqueeze_(0) for h in h_list]
             node_representation = torch.sum(torch.cat(h_list, dim=0), dim=0)
-        elif self.JK == "w_sum":
-            normed_weights = F.softmax(
-                torch.cat([parameter for parameter in self.para]), dim=0)
-            normed_weights = torch.split(normed_weights, split_size_or_sections=1)
+        else:
+            raise ValueError("unmatched argument.")
 
-            h_list = [h.unsqueeze_(0) * normed_weights[i] for i, h in enumerate(h_list)]
-            node_representation = torch.sum(torch.cat(h_list, dim=0), dim=0)
-        elif self.JK == 'list':
-            node_representation = h_list
 
         return node_representation
 
@@ -464,7 +458,7 @@ class GNN_topexpert(torch.nn.Module): # expert 를 parallel 하게
         self.cos_similarity = nn.CosineSimilarity(dim=1, eps=1e-6)
 
     
-        self.T = args.start_temp 
+        self.T = 10 
         self.criterion = criterion
         self.num_experts = args.num_experts
 
@@ -478,7 +472,7 @@ class GNN_topexpert(torch.nn.Module): # expert 를 parallel 하게
         if self.num_layer < 2:
             raise ValueError("Number of GNN layers must be greater than 1.")
 
-        self.gnn = GNN(self.num_layer, self.emb_dim, 'list', self.drop_ratio, gnn_type=self.gnn_type)
+        self.gnn = GNN(self.num_layer, self.emb_dim, self.JK, self.drop_ratio, gnn_type=self.gnn_type)
         
         # Different kind of graph pooling
         if self.graph_pooling == "sum":
@@ -516,9 +510,9 @@ class GNN_topexpert(torch.nn.Module): # expert 를 parallel 하게
 
         x, edge_index, edge_attr, batch = data.x, data.edge_index, data.edge_attr, data.batch
 
-        node_rep_list = self.gnn(x, edge_index, edge_attr)
-        gnn_out = self.pool(node_rep_list[-1], batch)
-        gate_input = self.gate_pool(node_rep_list[-1], batch)
+        node_rep = self.gnn(x, edge_index, edge_attr)
+        gnn_out = self.pool(node_rep, batch)
+        gate_input = self.gate_pool(node_rep, batch)
 
         ## multi-head mlps
         gnn_out = torch.unsqueeze(gnn_out, -1) # N x emb_dim x 1
@@ -539,7 +533,7 @@ class GNN_topexpert(torch.nn.Module): # expert 를 parallel 하게
         
         q_idx = torch.argmax(q, dim=-1)  # N x 1     
         if self.training:       
-            g = F.gumbel_softmax((q + 1e-10).log(), tau=self.T, hard=False, dim=-1)       
+            g = F.gumbel_softmax((q + 1e-10).log(), tau=10, hard=False, dim=-1)       
             g = torch.unsqueeze(g, 1)
             g = g.repeat(1, self.num_tasks, 1) # N x tasks x heads
             return g,  q_idx # N x tasks x heads // N // N 

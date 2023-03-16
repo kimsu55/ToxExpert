@@ -14,7 +14,7 @@ from model import GNN_topexpert
 from util import *
 
 def load_args():
-    parser = argparse.ArgumentParser(description='Pytorch implementation of pair graph')
+    parser = argparse.ArgumentParser()
 
 # seed & device
     parser.add_argument('--device_no', type=int, default=0,
@@ -22,12 +22,8 @@ def load_args():
     parser.add_argument('--seed', type=int, default=0, help="Seed for splitting the dataset.")
    
 #dataset
-    # parser.add_argument('--dataset_dir', type=str, default='/home/dataset',
-                        # help='directory of dataset. For now, only classification.')
-    parser.add_argument('--dataset_dir', type=str, default='/home/kimsu/N_dist/dataset',
-                        help='directory of dataset. For now, only classification.')
-    parser.add_argument('--dataset', type=str, default='bbbp',
-                        help='root directory of dataset. For now, only classification.')
+    parser.add_argument('--dataset_dir', type=str, default='./data', help='directory of dataset')
+    parser.add_argument('--dataset', type=str, default='bbbp', help='root directory of dataset')
     parser.add_argument('--split', type=str, default="scaffold", help="random or scaffold or random_scaffold")
 
 #model
@@ -44,8 +40,8 @@ def load_args():
                         help='dropout ratio (default: 0.5)')
     parser.add_argument('--graph_pooling', type=str, default="mean",
                         help='graph level pooling (sum, mean, max, set2set, attention)')
-    parser.add_argument('--JK', type=str, default="list",
-                        help='how the node features across layers are combined. last, sum, max, concat, or w_sum')
+    parser.add_argument('--JK', type=str, default="last",
+                        help='how the node features across layers are combined. last, sum, max, concat')
     parser.add_argument('--gnn_type', type=str, default="gin")
 
 
@@ -58,21 +54,19 @@ def load_args():
 
 
 #optimizer
-    parser.add_argument('--lr', type=float, default=0.001,
+    parser.add_argument('--lr', type=float, default=0.0001,
                         help='learning rate (default: 0.001)')
     parser.add_argument('--decay', type=float, default=0,
                         help='weight decay (default: 0)')
 
 ## loss balance
-    parser.add_argument('--lam', type=float, default=1, help=" for classification ")
-    parser.add_argument('--alpha', type=float, default=0.1, help=" for clustering")
-    parser.add_argument('--beta', type=float, default=0.1, help=" for alignment")
+    parser.add_argument('--alpha', type=float, default=0.1, help="balance parameter for clustering")
+    parser.add_argument('--beta', type=float, default=0.01, help="balance parameter for alignment")
 
 ## clustering
-    parser.add_argument('--start_temp', type=float, default=10, help=" temperature for gumble softmax, annealing")
-    parser.add_argument('--min_temp', type=float, default=0.1, help=" temperature for gumble softmax, annealing")
+    parser.add_argument('--min_temp', type=float, default=1, help=" temperature for gumble softmax, annealing")
     parser.add_argument('--num_experts', type=int, default=3)
-    parser.add_argument('--gate_dim', type=int, default=50, help="gate embedding space dimension")
+    parser.add_argument('--gate_dim', type=int, default=50, help="gate embedding space dimension, 50 or 300")
 
 
     
@@ -140,7 +134,7 @@ def train(args, model, loader, optimizer, scf_class):
         cluster_loss =  F.kl_div(q.log(), p, reduction='sum')
         align_loss = model.alignment_loss(scf_idx, q)
         
-        loss_total = classification_loss * args.lam  + args.alpha * (cluster_loss / num_graph) + args.beta * align_loss
+        loss_total = classification_loss  + args.alpha * (cluster_loss / num_graph) + args.beta * align_loss
         
         optimizer.zero_grad()
         loss_total.backward()
@@ -186,7 +180,7 @@ def main(args):
     args.num_tr_scf = scf_tr.num_scf
     
     num_iter = math.ceil(len(train_dataset) / args.batch_size) 
-    args.temp_alpha = np.exp(np.log(args.min_temp / args.start_temp + 1e-10) / (args.epochs * num_iter))
+    args.temp_alpha = np.exp(np.log(args.min_temp / 10 + 1e-10) / (args.epochs * num_iter))
 
 
     ## define a model and load chek points
