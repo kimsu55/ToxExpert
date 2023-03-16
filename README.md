@@ -16,7 +16,9 @@ We refer the below baseline code to build our implementation.
 [https://github.com/snap-stanford/pretrain-gnns](https://github.com/snap-stanford/pretrain-gnns)
 
 
-
+<p align="center">
+  <img src="https://github.com/kimsu55/ToxExpert/blob/main/img/fig3_main_arch.jpg" width="350" title="The overall framework of TopExpert">
+</p>
 
 ## Run  
 python main.py --dataset bbbp
@@ -39,7 +41,7 @@ conda install pytorch-geometric -c rusty1s -c conda-forge
 
 ```  
 
-### Cite (Bibtex)
+## Cite (Bibtex)
 - If you find ``TopExpert`` useful in your research, please cite the following paper:
   - Suyeon Kim, Dongha Lee, SeongKu Kang, Seonghyeon Lee, Hwanjo Yu. "Learning Topology-Specific Experts for Molecular Property Prediction"
   - Bibtex
