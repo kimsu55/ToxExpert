@@ -41,9 +41,8 @@ conda install pytorch-geometric -c rusty1s -c conda-forge
 ```  
 
 ## Cite (Bibtex)
-- If you find ``TopExpert`` useful in your research, please cite the following paper:
-  - Suyeon Kim, Dongha Lee, SeongKu Kang, Seonghyeon Lee, Hwanjo Yu. "Learning Topology-Specific Experts for Molecular Property Prediction"
-  - Bibtex
+- If you find ``TopExpert`` useful in your research, please consider citing:
+
 ```
 @article{kim2023learning,
   title={Learning Topology-Specific Experts for Molecular Property Prediction},
