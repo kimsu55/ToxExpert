@@ -17,7 +17,7 @@ We refer the below baseline code to build our implementation.
 
 
 <p align="center">
-  <img src="https://github.com/kimsu55/ToxExpert/blob/main/img/fig3_main_arch.jpg" width="350" title="The overall framework of TopExpert">
+  <img src="https://github.com/kimsu55/ToxExpert/blob/main/img/fig3_main_arch.jpg" width="500" title="The overall framework of TopExpert">
 </p>
 
 ## Run  
