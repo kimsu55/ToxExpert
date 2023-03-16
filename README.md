@@ -10,11 +10,7 @@
 
 This is Official Pytorch Implementation for the paper "Learning Topology-Specific Experts for Molecular Property Prediction". Suyeon Kim, Dongha Lee, SeongKu Kang, Seonghyeon Lee, Hwanjo Yu **(AAAI-23)**
 
-The paper is available at [Link](https://arxiv.org/abs/2302.13693)
-
-We refer the below baseline code to build our implementation.
-[https://github.com/snap-stanford/pretrain-gnns](https://github.com/snap-stanford/pretrain-gnns)
-
+The paper is available at [Link](https://arxiv.org/abs/2302.13693).
 
 <p align="center">
   <img src="https://github.com/kimsu55/ToxExpert/blob/main/img/fig3_main_arch.jpg" width="500" title="The overall framework of TopExpert">
@@ -23,7 +19,8 @@ We refer the below baseline code to build our implementation.
 ## Run  
 python main.py --dataset bbbp
 
-
+We refer the baseline code to build our implementation.
+[https://github.com/snap-stanford/pretrain-gnns](https://github.com/snap-stanford/pretrain-gnns)
 
 ## Package Install
 
