@@ -17,7 +17,9 @@ The paper is available at [Link](https://arxiv.org/abs/2302.13693).
 </p>
 
 ## Run  
+```
 python main.py --dataset bbbp
+```
 
 We refer the baseline code to build our implementation.
 [https://github.com/snap-stanford/pretrain-gnns](https://github.com/snap-stanford/pretrain-gnns)
